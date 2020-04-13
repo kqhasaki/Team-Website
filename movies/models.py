@@ -32,28 +32,34 @@ class Movie(models.Model):
     def get_baidu_cover(name):
         import string
         import json
+        from random import choice
         from urllib.request import urlopen, quote
 
         name = name.replace(' ', '+')
+        suffix = '电影海报'
+        count_time_out = 0
+        while True:
+            print(name+suffix)
+            url_path = f"https://image.baidu.com/search/acjson?tn=resultjson_com&ipn=rj&ct=201326592&is=&fp=result&queryWord={name}{suffix}cl=2&lm=-1&ie=utf-8&oe=utf-8&adpicid=&st=-1&z=&ic=0&hd=&latest=&copyright=&word={name}{suffix}"
 
-        url_path = f"https://image.baidu.com/search/acjson?tn=resultjson_com&ipn=rj&ct=201326592&is=&fp=result&queryWord={name}cl=2&lm=-1&ie=utf-8&oe=utf-8&adpicid=&st=-1&z=&ic=0&hd=&latest=&copyright=&word={name}"
+            url_path = quote(url_path, safe=string.printable)
 
-        url_path = quote(url_path, safe=string.printable)
-
-        with urlopen(url_path) as response:
-            source = response.read()
-
-        data = json.loads(source)
-        for dict_imgs in data['data']:
-            img_url = dict_imgs['thumbURL']
-            if img_url and is_valid(img_url):
-                return img_url
-            else:
+            with urlopen(url_path) as response:
+                source = response.read().decode()
+            try:
+                data = json.loads(source)
+                break
+            except json.JSONDecodeError:
+                suffix = ['海报', '图片', '电影', '', '百度', ' ',
+                          '。', '+豆瓣', '+海报', '+图片', '百度图片'][count_time_out]
+                count_time_out += 1
+                if count_time_out == 12:
+                    raise TimeoutError("图片找不到")
                 continue
 
     def get_cover(self):
         if not self.cover:
-            self.cover = self.get_baidu_cover(self.name + "电影海报")
+            self.cover = self.get_baidu_cover(self.name)
 
     class Meta:
         ordering = ['-douban_votes', '-douban_score']
