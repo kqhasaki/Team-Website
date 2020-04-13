@@ -1,0 +1,106 @@
+{% extends 'movies/base.html' %}
+{% block content %}
+
+
+<div class="container-fluid" style="text-align: center;">
+    <div class="row row-cols-1" style="height: 30px;">
+
+    </div>
+
+    <div class="row row-cols-4">
+
+
+        <div class="col">
+
+            <figure class="figure">
+                <img class="rounded-lg float-left shadow-lg border border-white" src="{{ object.cover }}"
+                    alt="{{ object.cover }}" style="height: 840px; max-width: 600px;">
+                <figcaption class="figure-caption">
+
+
+                    <h1 style="color: black;font: outline;">
+                        {{object.name}}
+                    </h1><br>
+
+                    {% if object.alias %}
+                    <p style="font-size: large; color:black">
+                        别名: {{object.alias}}
+                    </p>
+                    {% endif %}
+
+                    {% if object.directors %}
+                    <a style="font-size: 30px; text-decoration: none;" href="#">
+                        导演: {{object.directors}}
+                    </a><br>
+                    {% endif %}
+
+                    <div style="height: 30px;"></div>
+
+                    {% if object.actors %}
+                    <h5 style="text-align: justify;">
+                        主演: {{object.actors}}
+                    </h5><br>
+                    {% endif %}
+
+                    {% if object.regions %}
+                    <h5 style="color:black;">
+                        地区： {{object.regions}}
+                    </h5><br>
+                    {% endif %}
+
+                    {% if object.languages %}
+                    <h5>
+                        语言： {{object.languages}}
+                    </h5>
+                    {% endif %}
+
+                    <div style="height: 30px;"></div>
+
+                    {% if object.release_date %}
+                    <h5 style="color: dodgerblue;">
+                        上映日期： {{object.release_date}}
+                    </h5><br>
+                    {% endif %}
+
+                    {% if object.storyline %}
+                    <p style="font-size: large; font-weight: 200; color:black; text-align: justify;">
+                        故事梗概： {{object.storyline}}
+                    </p>
+                    {% endif %}
+
+                    {% if object.douban_votes %}
+                    <p style="font-size: 20px; color:red">
+                        人气： {{object.douban_votes}}
+                    </p>
+                    {% endif %}
+
+
+                    <a href="https://www.baidu.com/s?wd={{object.name}}+豆瓣" class="btn btn-info"
+                        target="_blank">在互联网上搜索详情</a>
+
+                    {% if object not in user.moviepreference.favorite_movie.all %}
+                    <button class="btn btn-outline-info" type="submit">
+                        喜欢
+                    </button>
+                    {% else %}
+                    <button class="btn btn-outline-danger" type="submit">
+                        从'喜欢'中移除
+                    </button>
+                    {% endif %}
+
+                </figcaption>
+            </figure>
+
+
+        </div>
+
+
+        </ul>
+    </div>
+
+
+
+
+</div>
+</div>
+{% endblock %}

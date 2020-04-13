@@ -1,0 +1,36 @@
+{% extends 'movies/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="container">
+    <div style="height: 30px;">
+        <h1>
+            欢迎使用RsMovies电影推荐网站，请登录
+        </h1>
+    </div>
+</div>
+<div style="height: 60px;"></div>
+<div class="container">
+    <form action="" method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+
+            <legend class="border-bottom mb-4">Log In</legend>
+            {{ form | crispy }}
+
+        </fieldset>
+
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">Submit</button>
+        </div>
+    </form>
+    <div class="border-top pt-3">
+        <small class="text-muted">Need an account?
+            <a href="{% url 'register' %}" class="ml-2">Register Now</a>
+        </small>
+
+    </div>
+
+</div>
+
+{% endblock %}

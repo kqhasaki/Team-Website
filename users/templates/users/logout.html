@@ -1,0 +1,19 @@
+{% extends 'movies/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="container">
+
+    <h2>You have successfully logged out.</h2>
+
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            <a style="text-align: center; font-weight: bold; font-size: 20px" href="{% url 'login' %}">Login In
+                Again</a>
+        </small>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'movies/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="container">
+    <div style="height: 30px;"></div>
+
+    <div class="shadow-lg content-section rounded">
+
+        <div class="media">
+            <img src="{{ user.profile.image.url }}" class="rounded-circle account-img">
+            <div class="media-body">
+                <h2 class="account-heading">
+                    {{user.username}}
+                </h2>
+                <p class="secondary">
+                    {{user.email}}
+                </p>
+            </div>
+        </div>
+
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+
+                <legend class="border-bottom mb-4">{{user.username}}的个人资料</legend>
+                {{ u_form | crispy }}
+                {{ p_form | crispy }}
+
+            </fieldset>
+
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Update</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- <div class="container ">
+        <h2>
+            您喜欢的电影
+        </h2>
+        <ul>
+            {% for movie in user.moviepreference.favorite_movie.all %}
+            <li>
+                <h1>{{movie.name}}</h1>
+            </li>
+            {% endfor %}
+        </ul>
+    </div> -->
+
+
+</div>
+
+
+{% endblock %}

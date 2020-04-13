@@ -1,0 +1,43 @@
+{% extends 'movies/base.html' %}
+{% block content %}
+
+<div class="container-fluid" style="text-align: center;">
+
+    {% if is_random %}
+    <div class="alert-info" style=" font-size: larger;">您现在没有收藏任何电影，因此本次的推荐是随机的</div>
+    {% endif %}
+
+    <div class="row row-cols-4">
+
+
+        {% for movie in movie_list%}
+        <div class="col">
+
+            <figure class="figure">
+                <img class="rounded-lg float-left shadow-lg border border-white" src="{{ movie.cover }}"
+                    alt="{{ movie.cover }}" style="height: 420px; width: 300px;">
+
+                <figcaption class="figure-caption text-center">
+                    <a href="/movies/{{movie.id}}" style="font-size:18px; text-decoration: none;">
+                        {{ movie.name}}
+                    </a>
+                    <span style="color:red; font-size:18px;">
+                        {{movie.douban_score}}
+                    </span>
+
+                </figcaption>
+            </figure>
+
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+
+
+</div>
+</div>
+{% endblock %}

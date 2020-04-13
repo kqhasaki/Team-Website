@@ -1,0 +1,69 @@
+{% extends 'movies/base.html' %}
+{% block content %}
+
+<div class="container-fluid" style="text-align: center;">
+    <div class="row row-cols-1" style="height: 30px;">
+
+    </div>
+
+    <div class="row row-cols-4">
+
+
+        {% for movie in movie_list%}
+        <div class="col">
+
+            <figure class="figure">
+                <img class="rounded-lg float-left shadow-lg border border-white" src="{{ movie.cover }}"
+                    alt="{{ movie.cover }}" style="height: 420px; width: 300px;">
+
+                <figcaption class="figure-caption text-center">
+                    <a href="/movies/{{movie.id}}" style="font-size:18px; text-decoration: none;">
+                        {{ movie.name}}
+                    </a>
+                    <span style="color:red; font-size:18px;">
+                        {{movie.douban_score}}
+                    </span>
+
+                </figcaption>
+            </figure>
+
+
+        </div>
+
+        {% endfor %}
+        <div style="height: 20px;"></div>
+
+        <div class="container text-center">
+
+            {% if is_paginated %}
+
+            {% if page_obj.has_previous %}
+            <a href="?page=1" class="btn btn-outline-info mb-4">First</a>
+            <a href="?page={{page_obj.previous_page_number}}" class="btn btn-outline-info mb-4">Previous</a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <a href="?page={{ num }}" class="btn btn-info mb-4">{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'+3' %}
+            <a href="?page={{ num }}" class="btn btn-outline-info mb-4">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-info mb-4">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-info mb-4">Last</a>
+            {% endif %}
+
+
+            {% endif %}
+        </div>
+
+    </div>
+
+
+
+
+</div>
+</div>
+{% endblock %}
