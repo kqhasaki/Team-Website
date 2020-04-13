@@ -11,10 +11,10 @@ from django.core.paginator import Paginator
 class MoiveListView(ListView):
     model = Movie
     template_name = 'movies/home.html'
-    queryset = [movie for movie in model.objects.all()[:50]
+    queryset = [movie for movie in model.objects.all()
                 if movie.cover]
     context_object_name = 'movie_list'
-    paginate_by = 30
+    paginate_by = 60
 
 
 class MovieDetailView(DetailView):
@@ -40,7 +40,7 @@ class RandomRecommendView(ListView):
         return context
 
     def get_queryset(self):
-        return [movie for movie in self.model.objects.order_by('?')[:60] if movie.cover]
+        return [movie for movie in self.model.objects.order_by('?')[:200] if movie.cover][:60]
 
 
 def about(request):
