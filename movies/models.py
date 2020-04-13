@@ -20,10 +20,22 @@ class Movie(models.Model):
     storyline = models.TextField(null=True)
 
     @staticmethod
+    def is_valid(img_url):
+        import requests
+        response = requests.get(img_url)
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+
+    @staticmethod
     def get_baidu_cover(name):
         import string
         import json
         from urllib.request import urlopen, quote
+
+        name = name.replace(' ', '+')
+
         url_path = f"https://image.baidu.com/search/acjson?tn=resultjson_com&ipn=rj&ct=201326592&is=&fp=result&queryWord={name}cl=2&lm=-1&ie=utf-8&oe=utf-8&adpicid=&st=-1&z=&ic=0&hd=&latest=&copyright=&word={name}"
 
         url_path = quote(url_path, safe=string.printable)
@@ -34,7 +46,7 @@ class Movie(models.Model):
         data = json.loads(source)
         for dict_imgs in data['data']:
             img_url = dict_imgs['thumbURL']
-            if img_url:
+            if img_url and is_valid(img_url):
                 return img_url
             else:
                 continue

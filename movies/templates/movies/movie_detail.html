@@ -82,7 +82,7 @@
                     <button class="btn btn-outline-info" type="submit">
                         喜欢
                     </button>
-                    {% else %}
+                    {% elif object in user.moviepreference.favorite_movie.all %}
                     <button class="btn btn-outline-danger" type="submit">
                         从'喜欢'中移除
                     </button>
