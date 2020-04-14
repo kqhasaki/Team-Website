@@ -1,5 +1,6 @@
 {% extends 'movies/base.html' %}
 {% block content %}
+{% load static %}
 
 <div class="container-fluid" style="text-align: center;">
     <div class="row row-cols-1" style="height: 30px;">
@@ -14,7 +15,7 @@
 
             <figure class="figure">
                 <img class="rounded-lg float-left shadow-lg border border-white" src="{{ movie.cover }}"
-                    alt="{{ movie.cover }}" style="height: 420px; width: 300px;">
+                    alt="{{ movie.name }}" style="height: 420px; width: 300px;">
 
                 <figcaption class="figure-caption text-center">
                     <a href="/movies/{{movie.id}}" style="font-size:18px; text-decoration: none;">
