@@ -28,8 +28,7 @@ class Movie(models.Model):
         else:
             return False
 
-    @staticmethod
-    def get_baidu_cover(name):
+    def get_baidu_cover(self, name):
         import string
         import json
         from random import choice
@@ -57,9 +56,15 @@ class Movie(models.Model):
                     raise TimeoutError("图片找不到")
                 continue
 
+        for dict_imgs in data['data']:
+            img_url = dict_imgs['thumbURL']
+            if img_url and self.is_valid(img_url):
+                return img_url
+            else:
+                continue
+
     def get_cover(self):
-        if not self.cover:
-            self.cover = self.get_baidu_cover(self.name)
+        self.cover = self.get_baidu_cover(self.name)
 
     class Meta:
         ordering = ['-douban_votes', '-douban_score']

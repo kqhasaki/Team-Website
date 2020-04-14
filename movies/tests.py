@@ -11,7 +11,7 @@ for obj in Movie.objects.all():
             obj.get_cover()
         except:
             print(f"*******{obj.name}图片获取失败******")
-            break
+            continue
         else:
             obj.save()
             print(f"-------{obj.name}图片更新成功------")
