@@ -29,7 +29,7 @@ class Profile(models.Model):
 class MoviePreference(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     favorite_movie = models.ManyToManyField(
-        'movies.Movie', default="")
+        'movies.Movie', default=None)
 
     def __str__(self):
         movie_list = [movie.name for movie in self.favorite_movie.all()]

@@ -2,69 +2,121 @@
 {% block content %}
 {% load static %}
 
-<div class="container-fluid" style="text-align: center;">
-    <div class="row row-cols-1" style="height: 30px;">
+<div class="row text-center bg-light">
 
+
+    {% for movie in movie_list%}
+
+    <div class="col">
+        <figure class="figure mt-4">
+            <img class="rounded-lg float-left shadow border border-white" src="{{ movie.cover }}"
+                alt="{{ movie.name }}--图像失效" style="height: 420px; width: 300px;">
+
+            <figcaption class="figure-caption text-center">
+                <a href="/movies/{{movie.id}}" style="font-size:20px; text-decoration: none;">
+                    {{ movie.name}}
+                </a>
+                <span style="color:red; font-size:20px;">
+                    {{movie.douban_score}}
+                </span>
+
+                {% if user.is_authenticated and movie in user.moviepreference.favorite_movie.all %}
+                <button data-href="{% url 'movies-toggle-like' %}" data-movieId="{{ movie.id }}"
+                    data-userName="{{ user.username }}" class="btn btn-like btn-outline-danger">移除‘喜欢’</button>
+                {% elif user.is_authenticated %}
+                <button data-href="{% url 'movies-toggle-like' %}" data-movieId="{{ movie.id }}"
+                    data-userName="{{ user.username }}" class="btn btn-like btn-outline-info">喜欢</button>
+                {% endif  %}
+
+            </figcaption>
+        </figure>
     </div>
 
-    <div class="row row-cols-4">
 
+    {% endfor %}
 
-        {% for movie in movie_list%}
-        <div class="col">
+</div>
 
-            <figure class="figure">
-                <img class="rounded-lg float-left shadow-lg border border-white" src="{{ movie.cover }}"
-                    alt="{{ movie.name }}" style="height: 420px; width: 300px;">
+<div class="row bg-light" style="height: 20px;"></div>
 
-                <figcaption class="figure-caption text-center">
-                    <a href="/movies/{{movie.id}}" style="font-size:18px; text-decoration: none;">
-                        {{ movie.name}}
-                    </a>
-                    <span style="color:red; font-size:18px;">
-                        {{movie.douban_score}}
-                    </span>
+<div class="row bg-light">
+    <div class="col-12 text-center">
 
-                </figcaption>
-            </figure>
+        {% if is_paginated %}
 
+        {% if page_obj.has_previous %}
+        <a href="?page=1" class="btn  btn-outline-info mb-4">First</a>
+        <a href="?page={{page_obj.previous_page_number}}" class="btn btn-outline-info mb-4">Previous</a>
+        {% endif %}
 
-        </div>
-
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <a href="?page={{ num }}" class="btn btn-info mb-4">{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'+3' %}
+        <a href="?page={{ num }}" class="btn btn-outline-info mb-4">{{ num }}</a>
+        {% endif %}
         {% endfor %}
-        <div style="height: 20px;"></div>
 
-        <div class="container text-center">
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-info mb-4">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-info mb-4">Last</a>
+        {% endif %}
 
-            {% if is_paginated %}
-
-            {% if page_obj.has_previous %}
-            <a href="?page=1" class="btn btn-outline-info mb-4">First</a>
-            <a href="?page={{page_obj.previous_page_number}}" class="btn btn-outline-info mb-4">Previous</a>
-            {% endif %}
-
-            {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-            <a href="?page={{ num }}" class="btn btn-info mb-4">{{ num }}</a>
-            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'+3' %}
-            <a href="?page={{ num }}" class="btn btn-outline-info mb-4">{{ num }}</a>
-            {% endif %}
-            {% endfor %}
-
-            {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-info mb-4">Next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-info mb-4">Last</a>
-            {% endif %}
-
-
-            {% endif %}
-        </div>
-
+        {% endif %}
     </div>
 
-
-
+</div>
 
 </div>
-</div>
+
+
+
+
+{% endblock %}
+
+{% block JavaScript%}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('.btn-like').click(function () {
+            var oThis = $(this);
+            var nMovieId = oThis.attr('data-movieId');
+            var sUserName = oThis.attr('data-userName');
+            var sUrl = oThis.attr('data-href');
+
+            $.ajax({
+                type: "GET",
+                url: sUrl,
+                data: {
+                    "movie_id": nMovieId,
+                    "username": sUserName,
+                },
+                dataType: "json",
+
+                success: function (data) {
+                    // alert(data.status);
+                    if (data.status == 'liked') {
+                        oThis.removeClass('btn-outline-info').addClass('btn-outline-danger').html('移除‘喜欢’');
+                    }
+                    else if (data.status == 'disliked') {
+                        oThis.removeClass('btn-outline-danger').addClass('btn-outline-info').html('喜欢');
+                    }
+                }
+            });
+        });
+
+
+        $('.figure').hover(
+            function () {
+
+                $(this).find('img').addClass('rounded-sm shadow-lg').addClass('');
+            },
+            function () {
+                $(this).find('img').removeClass('rounded-sm shadow-lg').removeClass('btn-infol');
+            }
+        )
+
+    });
+
+</script>
 {% endblock %}

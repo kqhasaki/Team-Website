@@ -1,10 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Movie
 from django.views.generic import ListView, DetailView
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.core.paginator import Paginator
+from django.contrib.auth.models import User
+from django.contrib import messages
 # Create your views here.
 
 
@@ -60,3 +62,46 @@ def liked_movies(request):
 #         'movie_list': movie_list,
 #     }
 #     return render(request, 'movies/movie_rec.html', context)
+
+
+def movie_toggle_like(request):
+    if request.is_ajax():
+
+        data = request.GET
+        movie = Movie.objects.filter(id=data['movie_id']).first()
+        user = User.objects.filter(username=data['username']).first()
+
+        flag = movie in user.moviepreference.favorite_movie.all()
+
+        if flag:
+            user.moviepreference.favorite_movie.remove(movie)
+            front_end_mark = 'disliked'
+        else:
+            user.moviepreference.favorite_movie.add(movie)
+            front_end_mark = 'liked'
+        user.moviepreference.save()
+
+        return JsonResponse({
+            'status': front_end_mark,
+            'flag': flag,
+        })
+
+    else:
+        raise Http404
+
+
+def movie_search(request):
+
+    name = request.GET['movieName']
+    current_url = request.GET['currentUrl']
+
+    movie = Movie.objects.filter(name__startswith=name).first()
+
+    if movie:
+        return redirect('movies-detail', movie.id)
+
+    elif name.replace(' ', ''):
+        messages.warning(request, f'对不起， {name} 暂时不在我们的数据库中，请试一试其他电影名称')
+        return redirect(current_url)
+    else:
+        return redirect(current_url)

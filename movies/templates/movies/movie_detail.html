@@ -74,33 +74,60 @@
                     </p>
                     {% endif %}
 
+                    <p>
+                        <a href="https://www.baidu.com/s?wd={{object.name}}+豆瓣" class="btn btn-info"
+                            target="_blank">在互联网上搜索详情</a>
 
-                    <a href="https://www.baidu.com/s?wd={{object.name}}+豆瓣" class="btn btn-info"
-                        target="_blank">在互联网上搜索详情</a>
+                        {% if user.is_authenticated and object in user.moviepreference.favorite_movie.all %}
+                        <button data-href="{% url 'movies-toggle-like' %}" data-movieId="{{ object.id }}"
+                            data-userName="{{ user.username }}" class="btn btn-like btn-outline-danger">移除‘喜欢’</button>
+                        {% elif user.is_authenticated %}
+                        <button data-href="{% url 'movies-toggle-like' %}" data-movieId="{{ object.id }}"
+                            data-userName="{{ user.username }}" class="btn btn-like btn-outline-info">喜欢</button>
+                        {% endif  %}
 
-                    {% if object not in user.moviepreference.favorite_movie.all %}
-                    <button class="btn btn-outline-info" type="submit">
-                        喜欢
-                    </button>
-                    {% elif object in user.moviepreference.favorite_movie.all %}
-                    <button class="btn btn-outline-danger" type="submit">
-                        从'喜欢'中移除
-                    </button>
-                    {% endif %}
 
+                    </p>
                 </figcaption>
             </figure>
-
-
         </div>
-
-
         </ul>
     </div>
 
-
-
-
 </div>
 </div>
+{% endblock %}
+
+{% block JavaScript%}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('.btn-like').click(function () {
+            var oThis = $(this);
+            var nMovieId = oThis.attr('data-movieId');
+            var sUserName = oThis.attr('data-userName');
+            var sUrl = oThis.attr('data-href');
+
+            $.ajax({
+                type: "GET",
+                url: sUrl,
+                data: {
+                    "movie_id": nMovieId,
+                    "username": sUserName,
+                },
+                dataType: "json",
+
+                success: function (data) {
+                    // alert(data.status);
+                    if (data.status == 'liked') {
+                        oThis.removeClass('btn-outline-info').addClass('btn-outline-danger').html('移除‘喜欢’');
+                    }
+                    else if (data.status == 'disliked') {
+                        oThis.removeClass('btn-outline-danger').addClass('btn-outline-info').html('喜欢');
+                    }
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

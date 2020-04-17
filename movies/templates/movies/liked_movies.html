@@ -1,12 +1,12 @@
 {% extends 'movies/base.html' %}
 {% block content %}
 
-<div class="container-fluid" style="text-align: center;">
+<div class="container-fluid" style="text-align: left;">
     <div class="row row-cols-1" style="height: 30px;">
 
     </div>
 
-    <div class="row row-cols-4">
+    <div class="row ">
 
 
         {% for movie in user.moviepreference.favorite_movie.all %}
