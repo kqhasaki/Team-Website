@@ -52,7 +52,6 @@ def get_recommendation(request):
                 sim_group.append((stranger, similarity))
         sim_group.sort(key=lambda x: x[1])
         neighbours += [simmer[0] for simmer in sim_group]
-        print(neighbours)
 
         movie_list = (reduce(lambda x, y: x+y,
                              [list(neighbour.moviepreference.favorite_movie.all()) for neighbour in neighbours]))
@@ -70,7 +69,6 @@ def get_recommendation(request):
 
         movie_list = [
             movie for movie in movie_set if movie not in user.moviepreference.favorite_movie.all()]
-        print(len(movie_list))
         if len(movie_list) >= 50:
             movie_list = movie_list[:50]
         else:
