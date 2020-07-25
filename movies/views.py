@@ -7,6 +7,8 @@ from django.utils.decorators import method_decorator
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.contrib import messages
+from .functions import is_similar
+from functools import reduce
 # Create your views here.
 
 
@@ -21,32 +23,88 @@ class MoiveListView(ListView):
 
 class MovieDetailView(DetailView):
     model = Movie
-    # 默认的模板名称： <app>/<model>_<viewtype>.html
     tempalte_name = 'movies/movie_detail.html'
 
 
-class RandomRecommendView(ListView):
-    model = Movie
-    template_name = 'movies/movie_rec.html'
-    context_object_name = 'movie_list'
+def get_recommendation(request):
+    user = request.user
+    is_random = not (user.moviepreference.favorite_movie.all()
+                     or user.friends_set.all())
 
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+    if is_random:
+        movie_list = [
+            movie for movie in Movie.objects.order_by('?') if movie.cover][:30]
+    else:
+        # the recommendation algorithm goes here
+        neighbours = []
+        friends = user.friends_set.first().movie_friends.all(
+        ) if user.friends_set.first() else []
+        strangers = [stranger for stranger in User.objects.all() if (
+            stranger.id != user.id) and (stranger not in friends)]
 
-    def get_context_data(self, **kwargs):
-        # 我们需要先继承至父模板的get_context_data方法，否则我们有很多方法将不能使用
-        context = super(ListView, self).get_context_data(**kwargs)
-        # 然后添加自定义的参数
-        context['is_random'] = True
-        return context
+        for friend in friends:
+            neighbours.append(friend)
 
-    def get_queryset(self):
-        return [movie for movie in self.model.objects.order_by('?')[:200] if movie.cover][:60]
+        for stranger in strangers:
+            if is_similar(stranger, user):
+                neighbours.append(stranger)
+
+        movie_list = list(
+            set(reduce(lambda x, y: x+y,
+                       [list(neighbour.moviepreference.favorite_movie.all())for neighbour in neighbours]))
+        )
+        movie_list = [
+            movie for movie in movie_list if movie not in user.moviepreference.favorite_movie.all()]
+        if len(movie_list) >= 30:
+            movie_list = movie_list[:30]
+        else:
+            rest = 30 - len(movie_list)
+            rest_movies = [movie for movie in Movie.objects.order_by(
+                '?') if movie not in movie_list][:rest]
+            movie_list += rest_movies
+    return render(request, 'movies/movie_rec.html', {'movie_list': movie_list, 'is_random': is_random})
 
 
-def about(request):
-    return render(request, 'movies/about.html')
+def show_friends(request):
+    curr_user = request.user
+    all_user_list = list(User.objects.all())
+    rec_friends = [user for user in all_user_list if (user.id != curr_user.id) and (
+        user not in curr_user.friends_set.first().movie_friends.all())]
+    if len(rec_friends) > 5:
+        rec_friends = rec_friends[:5]
+
+    return render(request, 'movies/friends.html', {'rec_friends': rec_friends})
+
+
+def add_friend(request):
+    if request.is_ajax():
+        data = request.GET
+        friend = User.objects.filter(id=data['user_id']).first()
+        user = User.objects.filter(id=data['curr_user']).first()
+        # 通过多对多关联来添加好友
+        if bool(user.friends_set.all()):
+            relationship = user.friends_set.first()
+            relationship.movie_friends.add(friend)
+        return JsonResponse({
+            'status': 'success'
+        })
+    else:
+        return Http404
+
+
+def remove_friend(request):
+    if request.is_ajax():
+        data = request.GET
+        friend = User.objects.filter(id=data['user_id']).first()
+        user = User.objects.filter(id=data['curr_user']).first()
+        if bool(user.friends_set.all()):
+            relationship = user.friends_set.first()
+            relationship.movie_friends.remove(friend)
+        return JsonResponse({
+            'status': 'success'
+        })
+    else:
+        return Http404
 
 
 @login_required

@@ -25,7 +25,7 @@ SECRET_KEY = 'c5@ggi_n8$22&&#27_tz-cf^7e975l6uac_8-o%qquv*5)n7vu'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['47.100.93.64', 'kqhasaki.top', 'www.kqhasaki.top']
+ALLOWED_HOSTS = ['47.100.93.64', 'kqhasaki.top', 'www.kqhasaki.top', '127.0.0.1']
 
 
 # Application definition
