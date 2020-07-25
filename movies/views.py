@@ -90,6 +90,7 @@ def show_friends(request):
         rec_friends = [user for user in all_user_list if (user.id != curr_user.id) and (
             user not in curr_user.friends_set.first().movie_friends.all())]
     else:
+        friends = []
         rec_friends = [user for user in all_user_list if (
             user.id != curr_user.id)]
     if len(rec_friends) > 5:
