@@ -37,7 +37,6 @@
                         </div>
                     </form>
                 </li>
-                <li class="nav-item"><a href="{% url 'movies-friends' %}" class="nav-link">我的好友</a></li>
                 <li class="nav-item"><a href="{% url 'movies-rec' %}" class="nav-link">推荐列表</a></li>
                 <li class="nav-item"><a href="{% url 'liked-movies' %}" class="nav-link">我喜欢的</a></li>
 
@@ -48,6 +47,7 @@
                 <li class="nav-item"><a href="/admin/" class="nav-link">管理员入口</a>
                     {% endif %}
 
+                <li class="nav-item"><a href="{% url 'movies-friends' %}" class="nav-link">我的好友</a></li>
                 <li class="nav-item"><a href="{% url 'profile' %}" class="nav-link">个人资料</a></li>
 
                 <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link"">注销</a>
