@@ -15,6 +15,6 @@ def compare_movie_list(list1, list2):
     set2 = set(list2)
 
     joint_set = set1.intersection(set2)
-    is_similar = len(joint_set) >= min(len(list1), len(list2)) * 0.7
+    is_similar = len(joint_set) >= min(len(list1), len(list2)) * 0.5
     similarity = len(joint_set)
     return is_similar, similarity
