@@ -42,11 +42,21 @@
         justify-content: center;
         align-items: center;
     }
+
+    .user-avatar {
+        transition: .5s;
+    }
+
+    .user-avatar:hover {
+        transform: scale(1.1);
+    }
 </style>
 
 <div style="height: 10px;"></div>
 
 <div>
+
+    {% if with_friends %}
     <h2>好友列表:</h2>
     <div class="friend-wrapper">
         {% for friend in user.friends_set.first.movie_friends.all %}
@@ -58,11 +68,17 @@
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <h2>您还没有任何好友哦，可以添加下面的好友</h2>
+    {% endif %}
+
     <h2>向您推荐的好友:</h2>
     <div class="friend-wrapper">
         {% for otheruser in rec_friends %}
         <div class="user-card" id="userCard">
-            <img src="{{ otheruser.profile.image.url }}" class="user-avatar">
+            <a href="/movies/others_liked_moives?user_id={{otheruser.id}}">
+                <img src="{{ otheruser.profile.image.url }}" class="user-avatar">
+            </a>
             <h4>{{ otheruser.username }}</h4>
             <button data-userid="{{otheruser.id}}" data-curruser="{{ user.id }}"
                 data-url="{% url 'add-friend' %}">添加好友</button>

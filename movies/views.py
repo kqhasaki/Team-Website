@@ -68,12 +68,17 @@ def get_recommendation(request):
 def show_friends(request):
     curr_user = request.user
     all_user_list = list(User.objects.all())
-    rec_friends = [user for user in all_user_list if (user.id != curr_user.id) and (
-        user not in curr_user.friends_set.first().movie_friends.all())]
+    with_friends = bool(curr_user.friends_set.first())
+    if with_friends:
+        rec_friends = [user for user in all_user_list if (user.id != curr_user.id) and (
+            user not in curr_user.friends_set.first().movie_friends.all())]
+    else:
+        rec_friends = [user for user in all_user_list if (
+            user.id != curr_user.id)]
     if len(rec_friends) > 5:
         rec_friends = rec_friends[:5]
 
-    return render(request, 'movies/friends.html', {'rec_friends': rec_friends})
+    return render(request, 'movies/friends.html', {'rec_friends': rec_friends, 'with_friends': with_friends})
 
 
 def add_friend(request):
@@ -111,6 +116,14 @@ def remove_friend(request):
 def liked_movies(request):
     return render(request, 'movies/liked_movies.html')
 
+
+def others_liked_moives(request):
+    user_id = request.GET.get('user_id')
+
+    username = User.objects.filter(id=user_id)[0].username
+    movie_list = User.objects.filter(
+        id=user_id)[0].moviepreference.favorite_movie.all()
+    return render(request, 'movies/others_liked_movies.html', {'movie_list': movie_list, 'username': username})
 
 # @login_required
 # def random_recommend(request):

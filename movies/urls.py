@@ -14,5 +14,7 @@ urlpatterns = [
     path('movies/liked_movies', views.liked_movies, name="liked-movies"),
     path('movies/search', views.movie_search, name="movies-search"),
     path('movies/add_friend', views.add_friend, name="add-friend"),
-    path('movies/remove_friend', views.remove_friend, name="remove-friend")
+    path('movies/remove_friend', views.remove_friend, name="remove-friend"),
+    path('movies/others_liked_moives',
+         views.others_liked_moives, name="others-liked-movies")
 ]
