@@ -83,12 +83,13 @@ def show_friends(request):
     curr_user = request.user
     all_user_list = list(User.objects.all())
     with_friends = bool(curr_user.friends_set.first())
-    friends = [user for user in curr_user.friends_set.first(
-    ).movie_friends.all() if user.id != curr_user.id]
     if with_friends:
+        friends = [user for user in curr_user.friends_set.first(
+        ).movie_friends.all() if user.id != curr_user.id]
         rec_friends = [user for user in all_user_list if (user.id != curr_user.id) and (
             user not in curr_user.friends_set.first().movie_friends.all())]
     else:
+        friends = []
         rec_friends = [user for user in all_user_list if (
             user.id != curr_user.id)]
     if len(rec_friends) > 5:
