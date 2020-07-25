@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .functions import is_similar
+from .functions import get_similarity
 from functools import reduce
 # Create your views here.
 
@@ -45,20 +45,36 @@ def get_recommendation(request):
         for friend in friends:
             neighbours.append(friend)
 
+        sim_group = []
         for stranger in strangers:
-            if is_similar(stranger, user):
-                neighbours.append(stranger)
+            is_similar, similarity = get_similarity(stranger, user)
+            if is_similar:
+                sim_group.append((stranger, similarity))
+        sim_group.sort(key=lambda x: x[1])
+        neighbours += [simmer[0] for simmer in sim_group]
+        print(neighbours)
 
-        movie_list = list(
-            set(reduce(lambda x, y: x+y,
-                       [list(neighbour.moviepreference.favorite_movie.all())for neighbour in neighbours]))
-        )
+        movie_list = (reduce(lambda x, y: x+y,
+                             [list(neighbour.moviepreference.favorite_movie.all()) for neighbour in neighbours]))
+
+        movie_set = set()
+
+        for neighbour in neighbours:
+            count = 0
+            for movie in neighbour.moviepreference.favorite_movie.order_by('-douban_score'):
+                if (count < 6):
+                    movie_set.add(movie)
+                    count += 1
+                else:
+                    break
+
         movie_list = [
-            movie for movie in movie_list if movie not in user.moviepreference.favorite_movie.all()]
-        if len(movie_list) >= 30:
-            movie_list = movie_list[:30]
+            movie for movie in movie_set if movie not in user.moviepreference.favorite_movie.all()]
+        print(len(movie_list))
+        if len(movie_list) >= 50:
+            movie_list = movie_list[:50]
         else:
-            rest = 30 - len(movie_list)
+            rest = 50 - len(movie_list)
             rest_movies = [movie for movie in Movie.objects.order_by(
                 '?') if movie not in movie_list][:rest]
             movie_list += rest_movies
@@ -69,6 +85,8 @@ def show_friends(request):
     curr_user = request.user
     all_user_list = list(User.objects.all())
     with_friends = bool(curr_user.friends_set.first())
+    friends = [user for user in curr_user.friends_set.first(
+    ).movie_friends.all() if user.id != curr_user.id]
     if with_friends:
         rec_friends = [user for user in all_user_list if (user.id != curr_user.id) and (
             user not in curr_user.friends_set.first().movie_friends.all())]
@@ -78,7 +96,7 @@ def show_friends(request):
     if len(rec_friends) > 5:
         rec_friends = rec_friends[:5]
 
-    return render(request, 'movies/friends.html', {'rec_friends': rec_friends, 'with_friends': with_friends})
+    return render(request, 'movies/friends.html', {'rec_friends': rec_friends, 'with_friends': with_friends, 'friends': friends})
 
 
 def add_friend(request):
@@ -89,6 +107,9 @@ def add_friend(request):
         # 通过多对多关联来添加好友
         if bool(user.friends_set.all()):
             relationship = user.friends_set.first()
+            relationship.movie_friends.add(friend)
+        else:
+            relationship = user.friends_set.create()
             relationship.movie_friends.add(friend)
         return JsonResponse({
             'status': 'success'

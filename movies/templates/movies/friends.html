@@ -59,7 +59,7 @@
     {% if with_friends %}
     <h2>好友列表:</h2>
     <div class="friend-wrapper">
-        {% for friend in user.friends_set.first.movie_friends.all %}
+        {% for friend in friends %}
         <div class="user-card" id="friendCard">
             <img src="{{ friend.profile.image.url }}" class="user-avatar">
             <h4>{{ friend.username }}</h4>
