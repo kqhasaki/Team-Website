@@ -15,7 +15,7 @@ jdcal==1.4.1
 MarkupPy==1.14
 odfpy==1.4.1
 openpyxl==3.0.3
-Pillow==7.1.1
+Pillow==9.0.0
 pycodestyle==2.5.0
 pycparser==2.20
 pytz==2019.3
