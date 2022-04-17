@@ -31,4 +31,3 @@ python manage.py runserver // 默认运行在8000端口
 ## 电影推荐
 
 ![](https://tva1.sinaimg.cn/large/e6c9d24egy1h1cyeusdd9j218o0u04an.jpg)
-

@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from PIL import Image
 from django.conf import settings
 from functools import reduce
-from .recommendation_functions import get_rec_list
 
 # Create your models here.
 
@@ -26,6 +25,11 @@ class Profile(models.Model):
             img.save(self.image.path)
 
 
+class Friends(models.Model):
+    movie_friends = models.ManyToManyField(
+        User, default=None)
+
+
 class MoviePreference(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     favorite_movie = models.ManyToManyField(
@@ -37,13 +41,13 @@ class MoviePreference(models.Model):
         return f'{self.user.username}喜欢的电影: {string}'
 
 
-class MovieRecommendation(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    recommend_movies = models.ManyToManyField(
-        'movies.Movie'
-    )
+# class MovieRecommendation(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     recommend_movies = models.ManyToManyField(
+#         'movies.Movie'
+#     )
 
-    def get_recommendation(self):
-        favortite_movie_list = self.user.moviepreference.favorite_movie.all()
-        # 这里写推荐函数，结合用户喜欢的电影，从Movie数据库中推荐电影
-        return get_rec_list(favortite_movie_list)
+#     def get_recommendation(self):
+#         favortite_movie_list = self.user.moviepreference.favorite_movie.all()
+#         # 这里写推荐函数，结合用户喜欢的电影，从Movie数据库中推荐电影
+#         return get_rec_list(favortite_movie_list)

@@ -1,0 +1,143 @@
+{% extends 'movies/base.html' %}
+
+{% block content %}
+<style>
+    .user-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 1rem;
+        padding: 1rem;
+    }
+
+    .user-card button {
+        outline: none;
+        border: none;
+        padding: .5rem;
+        border-radius: 5px;
+    }
+
+    #userCard button:hover {
+        background-color: purple;
+        color: #ffffff;
+    }
+
+    #friendCard button:hover {
+        background-color: red;
+        color: #fff;
+    }
+
+    .user-avatar {
+        height: 180px;
+        width: 180px;
+        border-radius: 50%;
+    }
+
+    .friend-wrapper {
+        min-height: 500px;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .user-avatar {
+        transition: .5s;
+    }
+
+    .user-avatar:hover {
+        transform: scale(1.1);
+    }
+</style>
+
+<div style="height: 10px;"></div>
+
+<div>
+
+    {% if with_friends %}
+    <h2>好友列表:</h2>
+    <div class="friend-wrapper">
+        {% for friend in friends %}
+        <div class="user-card" id="friendCard">
+            <img src="{{ friend.profile.image.url }}" class="user-avatar">
+            <h4>{{ friend.username }}</h4>
+            <button data-userid="{{ friend.id}}" data-curruser="{{ user.id }}"
+                data-url="{% url 'remove-friend' %}">删除好友</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <h2>您还没有任何好友哦，可以添加下面的好友</h2>
+    {% endif %}
+
+    <h2>向您推荐的好友:</h2>
+    <div class="friend-wrapper">
+        {% for otheruser in rec_friends %}
+        <div class="user-card" id="userCard">
+            <a href="/movies/others_liked_moives?user_id={{otheruser.id}}">
+                <img src="{{ otheruser.profile.image.url }}" class="user-avatar">
+            </a>
+            <h4>{{ otheruser.username }}</h4>
+            <button data-userid="{{otheruser.id}}" data-curruser="{{ user.id }}"
+                data-url="{% url 'add-friend' %}">添加好友</button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block JavaScript %}
+<script>
+    $(document).ready(function () {
+        $('#friendCard button').click(function () {
+            var oThis = $(this);
+            var userId = oThis.attr('data-userid');
+            var url = oThis.attr('data-url');
+            var curr_user = oThis.attr('data-curruser');
+
+            $.ajax(
+                {
+                    type: 'GET',
+                    url: url,
+                    data: {
+                        'user_id': userId,
+                        'curr_user': curr_user,
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            alert('删除成功');
+                        }
+                    }
+                }
+            )
+        });
+        $('#userCard button').click(function () {
+            var oThis = $(this);
+            var userId = oThis.attr('data-userid');
+            var url = oThis.attr('data-url');
+            var curr_user = oThis.attr('data-curruser');
+
+            $.ajax(
+                {
+                    type: 'GET',
+                    url: url,
+                    data: {
+                        'user_id': userId,
+                        'curr_user': curr_user,
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            alert('添加成功');
+                        }
+                    }
+                }
+            )
+        });
+    })
+</script>
+{% endblock %}
