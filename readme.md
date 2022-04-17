@@ -28,6 +28,12 @@ python manage.py runserver // 默认运行在8000端口
 
 ![](https://tva1.sinaimg.cn/large/e6c9d24egy1h1cyf311xqj218o0u0k39.jpg)
 
+## 添加好友
+
+![](https://tva1.sinaimg.cn/large/e6c9d24egy1h1d5u2ny5lj215r0u0djh.jpg)
+
 ## 电影推荐
 
 ![](https://tva1.sinaimg.cn/large/e6c9d24egy1h1cyeusdd9j218o0u04an.jpg)
+
+![](https://tva1.sinaimg.cn/large/e6c9d24egy1h1d5u28r36j215r0u011f.jpg)
